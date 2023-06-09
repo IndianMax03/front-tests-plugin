@@ -10,27 +10,25 @@ import org.apache.maven.project.MavenProject;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.logging.Logger;
 
 @Mojo(name="run")
 public class FrontTestsPlugin extends AbstractMojo {
 
-    private final Logger logger = Logger.getLogger(FrontTestsPlugin.class.getName());
-
-    @Parameter(property = "pathToSubproject")
-    private String pathToSubproject;
-
     @Parameter(defaultValue = "${project}")
     private MavenProject project;
 
+    @Parameter(defaultValue = "com.github.eirslett:frontend-maven-plugin:1.11.0:yarn")
+    private String command;
+
     public void execute() throws MojoExecutionException, MojoFailureException {
-        if (pathToSubproject == null) {
-            getLog().error("Need pathToSubproject param!");
-        }
+        getLog().info("*********************************************************");
+        getLog().info("**************** ТЕСТИРОВЩИК?😊 ОТДЫХАЙ!☺️***************");
+        getLog().info("*********************************************************");
+
         try {
             Process process = Runtime.getRuntime().exec(new String[]{
-                    "echo",
-                    "Выполняем фронт тесты... в процессе"
+                    "mvn",
+                    command
             });
             BufferedReader outputReader = new BufferedReader(new InputStreamReader(process.getInputStream()));
             BufferedReader errorReader = new BufferedReader(new InputStreamReader(process.getErrorStream()));
@@ -42,8 +40,6 @@ public class FrontTestsPlugin extends AbstractMojo {
             while ((processLog = errorReader.readLine()) != null) {
                 getLog().error(processLog);
             }
-
-            getLog().info(project.getBuild().getSourceDirectory());
 
             process.waitFor();
 
